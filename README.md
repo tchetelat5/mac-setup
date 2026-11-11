@@ -9,7 +9,7 @@ Open Terminal and run:
 ```bash
 mkdir -p ~/Code
 git clone https://github.com/tchetelat5/mac-setup.git ~/Code/mac-setup
-~/Code/mac-setup/setup.sh
+bash ~/Code/mac-setup/setup.sh
 ```
 
 (If git isn't installed yet, macOS will offer to install it — say yes, then run the lines again.)
