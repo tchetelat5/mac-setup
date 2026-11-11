@@ -1,0 +1,43 @@
+#!/bin/bash
+# Run when you sit down at a Mac (or before you walk away).
+# Pulls the latest for every repo in ~/Code and flags anything
+# that hasn't been pushed, so no work gets stranded on one machine.
+#
+#   code-status          check + pull everything
+#   code-status --no-pull   just check
+
+CODE_DIR="$HOME/Code"
+PULL=true
+[ "$1" = "--no-pull" ] && PULL=false
+
+for repo in "$CODE_DIR"/*/; do
+  [ -d "$repo/.git" ] || continue
+  name="$(basename "$repo")"
+  cd "$repo" || continue
+
+  issues=()
+  [ -n "$(git status --porcelain)" ] && issues+=("uncommitted changes")
+
+  git fetch --quiet 2>/dev/null
+  if git rev-parse --abbrev-ref '@{u}' >/dev/null 2>&1; then
+    ahead=$(git rev-list --count '@{u}..HEAD')
+    behind=$(git rev-list --count 'HEAD..@{u}')
+    [ "$ahead" -gt 0 ] && issues+=("$ahead commit(s) not pushed")
+    if [ "$behind" -gt 0 ]; then
+      if $PULL && [ ${#issues[@]} -eq 0 ]; then
+        git pull --quiet && echo "⬇️  $name — pulled $behind new commit(s)" && continue
+      else
+        issues+=("$behind commit(s) to pull")
+      fi
+    fi
+  else
+    issues+=("branch not on GitHub yet")
+  fi
+
+  if [ ${#issues[@]} -eq 0 ]; then
+    echo "✅ $name"
+  else
+    msg="$(printf '%s, ' "${issues[@]}")"
+    echo "⚠️  $name — ${msg%, }"
+  fi
+done

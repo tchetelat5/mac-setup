@@ -1,0 +1,5 @@
+# Heavy iOS/App Store tooling — Mac mini and MacBook Pro only.
+# Skip on the MacBook Neo (8GB RAM); remote into the Mac mini instead.
+# Requires being signed into the App Store app first.
+
+mas "Xcode", id: 497799835
