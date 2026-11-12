@@ -29,7 +29,7 @@ One Mac at a time, MacBook Neo or MacBook Pro first, Mac mini last (it runs the 
 
 ## Daily habit
 
-- **Sit down at a Mac:** run `code-status` — pulls the latest for every project.
+- **Sit down at a Mac:** run `code-status` — clones any new GitHub repos this Mac doesn't have yet, then pulls the latest for every project.
 - **Before walking away:** commit and push (or ask Claude Code to). Run `code-status` to confirm everything is ✅.
 
 ## Adding a tool

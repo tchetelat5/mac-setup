@@ -1,15 +1,35 @@
 #!/bin/bash
 # Run when you sit down at a Mac (or before you walk away).
-# Pulls the latest for every repo in ~/Code and flags anything
-# that hasn't been pushed, so no work gets stranded on one machine.
+#  1. Clones any of your GitHub repos that aren't on this Mac yet
+#  2. Pulls the latest for every repo in ~/Code
+#  3. Flags anything that hasn't been pushed, so no work gets stranded
 #
-#   code-status          check + pull everything
-#   code-status --no-pull   just check
+#   code-status              clone missing + pull + check
+#   code-status --no-pull    just check (no cloning, no pulling)
 
 CODE_DIR="$HOME/Code"
 PULL=true
 [ "$1" = "--no-pull" ] && PULL=false
 
+mkdir -p "$CODE_DIR"
+
+# 1. Clone anything on GitHub that's missing here
+if $PULL && command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  repos=$(gh repo list --limit 200 --no-archived --json name,nameWithOwner \
+          -q '.[] | "\(.name) \(.nameWithOwner)"' 2>/dev/null)
+  while read -r name full; do
+    [ -z "$name" ] && continue
+    if [ ! -d "$CODE_DIR/$name" ]; then
+      if gh repo clone "$full" "$CODE_DIR/$name" -- --quiet >/dev/null 2>&1; then
+        echo "📥 $name — cloned (new on this Mac)"
+      else
+        echo "⚠️  $name — couldn't clone"
+      fi
+    fi
+  done <<< "$repos"
+fi
+
+# 2 + 3. Pull and check every repo
 for repo in "$CODE_DIR"/*/; do
   [ -d "$repo/.git" ] || continue
   name="$(basename "$repo")"
