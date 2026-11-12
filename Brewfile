@@ -14,3 +14,7 @@ brew "mas"           # installs Mac App Store apps from the command line
 # Apps
 cask "visual-studio-code"
 cask "claude-code"   # Claude Code in the terminal
+cask "claude"
+cask "notion"
+cask "google-chrome"
+cask "tailscale-app"
